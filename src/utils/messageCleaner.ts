@@ -1,7 +1,6 @@
-import { BotContext } from '../context';
+import {BotContext} from "../interfaces/bot-context.interface";
 
 export const messageCleaner = async (ctx: BotContext) => {
-    console.log(`ctx.session.messageIds`, ctx.session.messageIds)
     ctx.session.messageIds.map(async (message: number) => {
         try {
             await ctx.deleteMessage(message)

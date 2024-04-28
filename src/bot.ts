@@ -4,8 +4,8 @@ import { LocalisationObject } from './utils/localisation';
 import { FileIdService } from './utils/fileId';
 import { logger } from './logger';
 import handlers from './scenes';
-import {session} from "./utils/session";
-import {BotContext} from "./interfaces/bot-context.interface";
+import { session } from './utils/session';
+import { BotContext } from './interfaces/bot-context.interface';
 
 export const startBot = async (): Promise<void> => {
     const bot = new Telegraf<BotContext>(process.env.TELEGRAM__BOT_TOKEN);
@@ -28,7 +28,7 @@ export const startBot = async (): Promise<void> => {
                 /* Just ignore him */
                 return null;
             },
-        }),
+        })
     );
 
     // Session
@@ -41,7 +41,7 @@ export const startBot = async (): Promise<void> => {
     bot.context.fileId = new FileIdService();
 
     // Configure stage
-    let stage = new Scenes.Stage<BotContext>();
+    const stage = new Scenes.Stage<BotContext>();
     bot.use(stage.middleware());
 
     bot.catch((err) => {
@@ -55,5 +55,5 @@ export const startBot = async (): Promise<void> => {
         logger.error(error);
     }
 
-    await bot.launch()
+    await bot.launch();
 };

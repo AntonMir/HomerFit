@@ -1,5 +1,5 @@
-import {ConnectOptions} from "mongoose";
-import mongoose from "mongoose";
+import { ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 
 export const creatDBConnect = async () => {
     const mongoOptions: ConnectOptions = {
@@ -7,4 +7,4 @@ export const creatDBConnect = async () => {
         autoIndex: true,
     };
     await mongoose.connect(process.env.MONGO_URL, mongoOptions);
-}
+};

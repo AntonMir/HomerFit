@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 
-export const BotUsers = mongoose.connection.collection('botUsers');
+export const BotUsers = mongoose.connection.collection<{ _id: string }>(
+    'botUsers'
+);
 const userModel = new mongoose.Schema({
-    _id: String,
+    _id: { type: String },
     id: Number,
     bot: String,
     data: Object,

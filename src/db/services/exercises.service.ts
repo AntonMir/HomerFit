@@ -17,6 +17,10 @@ export class ExercisesService {
         }
     }
 
+    /**
+     * Получить все упражнения по списку id
+     * @param list
+     */
     async getAllByIdList(list: ObjectId[]) {
         try {
             return await Exercises.find({
@@ -25,7 +29,19 @@ export class ExercisesService {
                 },
             }).toArray();
         } catch (error) {
-            logger.error('ExercisesService > createExercise > ', error);
+            logger.error('ExercisesService > getAllByIdList > ', error);
+        }
+    }
+
+    /**
+     * Получить упражнение по id
+     * @param _id
+     */
+    async getOneById(_id: ObjectId) {
+        try {
+            return await Exercises.findOne({ _id });
+        } catch (error) {
+            logger.error('ExercisesService > getOneById > ', error);
         }
     }
 }

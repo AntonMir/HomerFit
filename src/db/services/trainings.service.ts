@@ -23,33 +23,29 @@ export class TrainingsService {
      * @param exerciseId
      */
     async addExercise(trainingId: ObjectId, exerciseId: ObjectId) {
-        try {
-            const result = await Trainings.updateOne(
-                { _id: trainingId },
-                { $push: { exercises: exerciseId } }
-            );
+        const result = await Trainings.updateOne(
+            { _id: trainingId },
+            { $push: { exercises: exerciseId } }
+        );
 
-            if (result && result.modifiedCount === 1) {
-                return result.modifiedCount; // Количество измененных документов
-            } else {
-                logger.error(
-                    `TrainingsRepository >  addExercise > Failed to add exercise to training with ID ${trainingId}`
-                );
-            }
-        } catch (error) {
-            logger.error('TrainingsService > createTraining > ', error);
+        if (result && result.modifiedCount === 1) {
+            return result.modifiedCount; // Количество измененных документов
+        } else {
+            logger.error(
+                `TrainingsRepository >  addExercise > Failed to add exercise to training with ID ${trainingId}`
+            );
         }
     }
 
     /**
      * Получить тренировку по id
-     * @param trainingId
+     * @param _id
      */
-    async getOneById(trainingId: ObjectId) {
+    async getOneById(_id: ObjectId) {
         try {
-            return await Trainings.findOne({ _id: trainingId });
+            return await Trainings.findOne({ _id });
         } catch (error) {
-            logger.error('TrainingsService > createTraining > ', error);
+            logger.error('TrainingsService > getOneById > ', error);
         }
     }
 }

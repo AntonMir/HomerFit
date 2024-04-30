@@ -8,3 +8,4 @@ build
 .env.stage
 .env.prod
 .env
+/package-lock.json

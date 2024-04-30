@@ -1,5 +1,5 @@
-import {BotContext} from "../interfaces/bot-context.interface";
-import {BotUser} from "../models/botUser";
+import { BotContext } from '../interfaces/bot-context.interface';
+import { BotUsers } from '../db/collections/bot-user.schema';
 
 const getSessionKey = (ctx: BotContext) => {
     if (ctx.from == null) {
@@ -13,17 +13,16 @@ const getSessionKey = (ctx: BotContext) => {
  * Session middleware with native meteor mongodb connection
  */
 export const session = () => {
-    const collection = BotUser;
-
-    const saveSession = async (
-        tgId: number,
-        data: any
-    ): Promise<void> => {
-        await collection.updateOne({id: tgId}, { $set: { data } }, { upsert: true });
+    const saveSession = async (tgId: number, data: any): Promise<void> => {
+        await BotUsers.updateOne(
+            { id: tgId },
+            { $set: { data } },
+            { upsert: true }
+        );
     };
 
     const getSession = async (tgId: number): Promise<any> => {
-        return (await collection.findOne({id: tgId}))?.data ?? {};
+        return (await BotUsers.findOne({ id: tgId }))?.data ?? {};
     };
 
     return async (ctx: BotContext, next: any) => {

@@ -1,13 +1,13 @@
 import { Scenes, Telegraf } from 'telegraf';
 import initScene from './init';
-import start from './start.scene';
+import firstEnter from './first-enter.scene';
 import mainMenu from './mainMenu.scene';
-import createTraining from './create-training.scene';
-import createExercise from './create-exercise.scene';
-import { BotContext } from '../interfaces/bot-context.interface';
+import createTraining from './create/create-training.scene';
+import createExercise from './create/create-exercise.scene';
 import { SCENES } from '../enums/scenes.enum';
+import { BotContext } from '../interfaces/bot-context.interface';
 
-const startScene = new Scenes.BaseScene<BotContext>(SCENES.START);
+const firstEnterScene = new Scenes.BaseScene<BotContext>(SCENES.FIRST_ENTER);
 const mainMenuScene = new Scenes.BaseScene<BotContext>(SCENES.MAIN_MENU);
 const createTrainingScene = new Scenes.BaseScene<BotContext>(
     SCENES.CREATE_TRAINING
@@ -21,13 +21,13 @@ export default (
     stage: Scenes.Stage<BotContext>
 ): void => {
     stage.scenes = new Map<string, Scenes.BaseScene<BotContext>>([
-        [SCENES.START, startScene],
+        [SCENES.FIRST_ENTER, firstEnterScene],
         [SCENES.MAIN_MENU, mainMenuScene],
         [SCENES.CREATE_TRAINING, createTrainingScene],
         [SCENES.CREATE_EXERCISE, createExerciseScene],
     ]);
 
-    start(startScene);
+    firstEnter(firstEnterScene);
     mainMenu(mainMenuScene);
     createTraining(createTrainingScene);
     createExercise(createExerciseScene);

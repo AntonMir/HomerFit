@@ -1,17 +1,12 @@
 import { Markup, Scenes } from 'telegraf';
-import { messageCleaner } from '../utils/messageCleaner';
-import { BotContext } from '../interfaces/bot-context.interface';
-import { SCENES } from '../enums/scenes.enum';
-import { BotMatchContext } from '../interfaces/bot-match-context.interface';
+import { messageCleaner } from '../../utils/messageCleaner';
+import { SCENES } from '../../enums/scenes.enum';
+import { BotContext } from '../../interfaces/bot-context.interface';
+import { BotMatchContext } from '../../interfaces/bot-match-context.interface';
 
 export default (createExercise: Scenes.BaseScene<BotContext>): void => {
     createExercise.enter(async (ctx: BotContext) => {
         await messageCleaner(ctx);
-
-        ctx.session.exerciseCandidate = {
-            name: '',
-            approaches: [],
-        };
 
         const text = '⬇️️Введите название упражнения⬇️️';
 
@@ -23,16 +18,29 @@ export default (createExercise: Scenes.BaseScene<BotContext>): void => {
         ctx.session.messageIds.push(message.message_id);
     });
 
-    createExercise.hears(/.*/, async (ctx: BotMatchContext) => {
-        ctx.session.exerciseCandidate.name = ctx.match.input;
+    createExercise.hears(/.*/, async (ctx: BotMatchContext, next: any) => {
+        if (['/reset'].includes(ctx.match.input)) return next();
 
-        ctx.session.trainingCandidate.exercises.push(
-            ctx.session.exerciseCandidate
+        const newExerciseId = await ctx.exercises.createExercise({
+            name: ctx.match.input,
+        });
+
+        await ctx.trainings.addExercise(
+            ctx.session.chosenTrainingId,
+            newExerciseId
+        );
+
+        const training = await ctx.trainings.getOneById(
+            ctx.session.chosenTrainingId
+        );
+
+        const exercises = await ctx.exercises.getAllByIdList(
+            training.exercises
         );
 
         let textExercisesList: string;
 
-        ctx.session.trainingCandidate.exercises.forEach((exercise) => {
+        exercises.forEach((exercise) => {
             if (textExercisesList) {
                 textExercisesList += ` - ${exercise.name}\n`;
             } else {
@@ -41,7 +49,7 @@ export default (createExercise: Scenes.BaseScene<BotContext>): void => {
         });
 
         const text =
-            `Тренировка: ${ctx.session.trainingCandidate.name}\n` +
+            `Тренировка: ${training.name}\n` +
             `Упражнения:\n` +
             textExercisesList;
 
@@ -64,15 +72,8 @@ export default (createExercise: Scenes.BaseScene<BotContext>): void => {
     });
 
     createExercise.action('saveTraining', async (ctx: BotContext) => {
-        ctx.session.trainingsList.push(ctx.session.trainingCandidate);
-        ctx.session.trainingCandidate = {
-            name: '',
-            exercises: [],
-        };
-        ctx.session.exerciseCandidate = {
-            name: '',
-            approaches: [],
-        };
+        ctx.session.trainingsList.push(ctx.session.chosenTrainingId);
+        ctx.session.chosenTrainingId = undefined;
         return await ctx.scene.enter(SCENES.MAIN_MENU);
     });
 

@@ -1,5 +1,5 @@
 export enum SCENES {
-    START = 'START',
+    FIRST_ENTER = 'FIRST_ENTER',
     MAIN_MENU = 'MAIN_MENU',
 
     // CREATE SCENES

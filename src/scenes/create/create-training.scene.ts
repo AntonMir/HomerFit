@@ -1,17 +1,12 @@
 import { Markup, Scenes } from 'telegraf';
-import { messageCleaner } from '../utils/messageCleaner';
-import { BotContext } from '../interfaces/bot-context.interface';
-import { SCENES } from '../enums/scenes.enum';
-import { BotMatchContext } from '../interfaces/bot-match-context.interface';
+import { messageCleaner } from '../../utils/messageCleaner';
+import { SCENES } from '../../enums/scenes.enum';
+import { BotContext } from '../../interfaces/bot-context.interface';
+import { BotMatchContext } from '../../interfaces/bot-match-context.interface';
 
 export default (createTraining: Scenes.BaseScene<BotContext>): void => {
     createTraining.enter(async (ctx: BotContext) => {
         await messageCleaner(ctx);
-
-        ctx.session.trainingCandidate = {
-            name: '',
-            exercises: [],
-        };
 
         const text = '⬇️️Введите название тренировки⬇️️';
 
@@ -23,8 +18,12 @@ export default (createTraining: Scenes.BaseScene<BotContext>): void => {
         ctx.session.messageIds.push(message.message_id);
     });
 
-    createTraining.hears(/.*/, async (ctx: BotMatchContext) => {
-        ctx.session.trainingCandidate.name = ctx.match.input;
+    createTraining.hears(/.*/, async (ctx: BotMatchContext, next: any) => {
+        if (['/reset'].includes(ctx.match.input)) return next();
+
+        ctx.session.chosenTrainingId = await ctx.trainings.createTraining({
+            name: ctx.match.input,
+        });
 
         const text =
             `Тренировка: ${ctx.match.input}\n` + `\n` + 'Добавить упражнение?';
@@ -43,11 +42,8 @@ export default (createTraining: Scenes.BaseScene<BotContext>): void => {
     });
 
     createTraining.action('saveTraining', async (ctx: BotContext) => {
-        ctx.session.trainingsList.push(ctx.session.trainingCandidate);
-        ctx.session.trainingCandidate = {
-            name: '',
-            exercises: [],
-        };
+        ctx.session.trainingsList.push(ctx.session.chosenTrainingId);
+        ctx.session.chosenTrainingId = undefined;
         return await ctx.scene.enter(SCENES.MAIN_MENU);
     });
 

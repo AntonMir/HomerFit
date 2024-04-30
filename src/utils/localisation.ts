@@ -1,4 +1,4 @@
-import { Localisation } from "../localisation";
+import { Localisation } from '../localisation';
 
 type LocaleEntityLike = string | number | boolean | undefined | null;
 

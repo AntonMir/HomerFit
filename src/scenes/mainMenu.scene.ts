@@ -1,7 +1,7 @@
 import { Markup, Scenes } from 'telegraf';
 import { messageCleaner } from '../utils/messageCleaner';
-import { BotContext } from '../interfaces/bot-context.interface';
 import { SCENES } from '../enums/scenes.enum';
+import { BotContext } from '../interfaces/bot-context.interface';
 
 export default (mainMenu: Scenes.BaseScene<BotContext>): void => {
     mainMenu.enter(async (ctx: BotContext) => {

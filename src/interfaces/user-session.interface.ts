@@ -1,5 +1,5 @@
 import { Scenes } from 'telegraf';
-import { IExercise, ITraining } from './training.interface';
+import { ObjectId } from 'mongoose';
 
 export interface UserSession extends Scenes.SceneSessionData {
     // CTX.FROM FIELDS
@@ -17,9 +17,8 @@ export interface UserSession extends Scenes.SceneSessionData {
     botName?: string;
     // USER FIELDS
     firstStart?: boolean;
-    trainingsList?: ITraining[];
-    trainingCandidate?: ITraining;
-    exerciseCandidate?: IExercise;
+    trainingsList?: ObjectId[];
+    chosenTrainingId?: ObjectId;
 
     __scenes?: Scenes.SceneSessionData;
 }

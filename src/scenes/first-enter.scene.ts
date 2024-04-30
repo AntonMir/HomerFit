@@ -1,9 +1,9 @@
 import { Markup, Scenes } from 'telegraf';
-import { BotContext } from '../interfaces/bot-context.interface';
 import { SCENES } from '../enums/scenes.enum';
+import { BotContext } from '../interfaces/bot-context.interface';
 
-export default (start: Scenes.BaseScene<BotContext>): void => {
-    start.enter(async (ctx: BotContext) => {
+export default (firstEnter: Scenes.BaseScene<BotContext>): void => {
+    firstEnter.enter(async (ctx: BotContext) => {
         const startText =
             `Привет ${ctx.from.first_name}\n` +
             `\n` +
@@ -20,7 +20,7 @@ export default (start: Scenes.BaseScene<BotContext>): void => {
         ctx.session.messageIds.push(message.message_id);
     });
 
-    start.action('toMainMenu', async (ctx: BotContext) => {
+    firstEnter.action('toMainMenu', async (ctx: BotContext) => {
         ctx.session.firstStart = false;
         return await ctx.scene.enter(SCENES.MAIN_MENU);
     });

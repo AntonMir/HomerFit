@@ -1,16 +1,14 @@
-import {Context, Scenes, Telegraf} from "telegraf";
-import {ChannelObject} from "../utils/channel";
-import {FileIdService} from "../utils/fileId";
-import {DevFileIdService} from "../utils/fileId";
-import {LocalisationObject} from "../utils/localisation";
-import {UserSession} from "./user-session.interface";
+import { Context, Scenes } from 'telegraf';
+import { UserSession } from './user-session.interface';
+import { TrainingsService } from '../db/services/trainings.service';
+import { ExercisesService } from '../db/services/exercises.service';
 
 export interface BotContext extends Context {
-    channel: ChannelObject;
-    fileId: FileIdService | DevFileIdService;
-    flow: (ctx: BotContext, newState: string) => Promise<void>;
-    loc: LocalisationObject;
+    // bot: Telegraf<BotContext>;
+    // loc: LocalisationObject;
+    // fileId: FileIdService | DevFileIdService;
+    exercises: ExercisesService;
+    trainings: TrainingsService;
     session: UserSession;
     scene: Scenes.SceneContextScene<BotContext>;
-    bot: Telegraf<BotContext>
 }

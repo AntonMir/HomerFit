@@ -1,10 +1,10 @@
 import { Scenes, Telegraf } from 'telegraf';
 import * as rateLimit from 'telegraf-ratelimit';
-import { LocalisationObject } from './utils/localisation';
-import { FileIdService } from './utils/fileId';
-import { logger } from './logger';
 import handlers from './scenes';
 import { session } from './utils/session';
+import { logger } from './utils/logger';
+import { TrainingsService } from './db/services/trainings.service';
+import { ExercisesService } from './db/services/exercises.service';
 import { BotContext } from './interfaces/bot-context.interface';
 
 export const startBot = async (): Promise<void> => {
@@ -35,10 +35,16 @@ export const startBot = async (): Promise<void> => {
     bot.use(session());
 
     // Localisation
-    bot.context.loc = new LocalisationObject();
+    // bot.context.loc = new LocalisationObject();
 
     // FileId service
-    bot.context.fileId = new FileIdService();
+    // bot.context.fileId = new FileIdService();
+
+    // TrainingService
+    bot.context.trainings = new TrainingsService();
+
+    // ExercisesService
+    bot.context.exercises = new ExercisesService();
 
     // Configure stage
     const stage = new Scenes.Stage<BotContext>();

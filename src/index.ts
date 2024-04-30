@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 config();
-import { creatDBConnect } from './db/db.connect';
+import { creatDBConnect } from './db/db.module';
 import { startBot } from './bot';
 
 (async () => {

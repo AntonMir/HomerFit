@@ -1,22 +1,17 @@
 import { logger } from '../../utils/logger';
-import { ExercisesRepository } from '../repositoryes/exercises.repository';
 import { ObjectId } from 'mongoose';
 import { IExercise } from '../../interfaces/exercise.interface';
+import { Exercises } from '../collections/exercise.schema';
 
 export class ExercisesService {
-    private readonly exercisesRepository: ExercisesRepository;
-
-    constructor() {
-        this.exercisesRepository = new ExercisesRepository();
-    }
-
     /**
      * Создать новое упражнение
      * @param exercise
      */
     async createExercise(exercise: IExercise) {
         try {
-            return await this.exercisesRepository.insertOne(exercise);
+            const insertResult = await Exercises.insertOne(exercise);
+            return insertResult.insertedId;
         } catch (error) {
             logger.error('ExercisesService > createExercise > ', error);
         }
@@ -24,7 +19,11 @@ export class ExercisesService {
 
     async getAllByIdList(list: ObjectId[]) {
         try {
-            return await this.exercisesRepository.getAllByIdList(list);
+            return await Exercises.find({
+                _id: {
+                    $in: list,
+                },
+            }).toArray();
         } catch (error) {
             logger.error('ExercisesService > createExercise > ', error);
         }

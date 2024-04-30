@@ -1,22 +1,17 @@
-import { TrainingsRepository } from '../repositoryes/trainings.repository';
 import { logger } from '../../utils/logger';
 import { ObjectId } from 'mongoose';
 import { ITraining } from '../../interfaces/training.interface';
+import { Trainings } from '../collections/training.schema';
 
 export class TrainingsService {
-    private readonly trainingsRepository: TrainingsRepository;
-
-    constructor() {
-        this.trainingsRepository = new TrainingsRepository();
-    }
-
     /**
      * Создать новую тренировку
      * @param training
      */
     async createTraining(training: ITraining) {
         try {
-            return await this.trainingsRepository.insertOne(training);
+            const insertResult = await Trainings.insertOne(training);
+            return insertResult.insertedId;
         } catch (error) {
             logger.error('TrainingsService > createTraining > ', error);
         }
@@ -29,10 +24,18 @@ export class TrainingsService {
      */
     async addExercise(trainingId: ObjectId, exerciseId: ObjectId) {
         try {
-            return await this.trainingsRepository.addExercise(
-                trainingId,
-                exerciseId
+            const result = await Trainings.updateOne(
+                { _id: trainingId },
+                { $push: { exercises: exerciseId } }
             );
+
+            if (result && result.modifiedCount === 1) {
+                return result.modifiedCount; // Количество измененных документов
+            } else {
+                logger.error(
+                    `TrainingsRepository >  addExercise > Failed to add exercise to training with ID ${trainingId}`
+                );
+            }
         } catch (error) {
             logger.error('TrainingsService > createTraining > ', error);
         }
@@ -44,7 +47,7 @@ export class TrainingsService {
      */
     async getOneById(trainingId: ObjectId) {
         try {
-            return await this.trainingsRepository.getOneById(trainingId);
+            return await Trainings.findOne({ _id: trainingId });
         } catch (error) {
             logger.error('TrainingsService > createTraining > ', error);
         }

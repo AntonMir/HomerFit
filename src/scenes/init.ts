@@ -1,7 +1,7 @@
 import { Composer } from 'telegraf';
 import { SCENES } from '../enums/scenes.enum';
 import { BotContext } from '../interfaces/bot-context.interface';
-import { BotUsers } from '../db/collections/bot-user.schema';
+import { BotUser } from '../db/collections/bot-user.schema';
 
 const init = new Composer<BotContext>();
 
@@ -14,8 +14,8 @@ init.command('start', async (ctx) => {
             trainingsList: [],
         };
 
-        await BotUsers.updateOne(
-            { id: ctx.from.id },
+        await BotUser.updateOne(
+            { id: ctx.from.id, bot: ctx.botInfo.username },
             { $set: { id: ctx.from.id } },
             { upsert: true }
         );
@@ -28,7 +28,7 @@ init.command('start', async (ctx) => {
 
 // TODO: удалить
 init.command('reset', async (ctx: BotContext) => {
-    await BotUsers.deleteOne({ id: ctx.from.id });
+    await BotUser.deleteOne({ id: ctx.from.id });
     ctx.session = {
         __scenes: {},
     };

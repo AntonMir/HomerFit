@@ -1,5 +1,4 @@
 import { Scenes } from 'telegraf';
-import { ObjectId } from 'mongoose';
 
 export interface UserSession extends Scenes.SceneSessionData {
     // CTX.FROM FIELDS
@@ -17,8 +16,10 @@ export interface UserSession extends Scenes.SceneSessionData {
     botName?: string;
     // USER FIELDS
     firstStart?: boolean;
-    trainingsList?: ObjectId[];
-    chosenTrainingId?: ObjectId;
+    trainingsList?: string[];
+    chosenTrainingId?: string;
+    hearExerciseName?: boolean;
+    hearTrainingName?: boolean;
 
     __scenes?: Scenes.SceneSessionData;
 }

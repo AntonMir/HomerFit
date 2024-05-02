@@ -6,6 +6,7 @@ import { logger } from './utils/logger';
 import { TrainingsService } from './db/services/trainings.service';
 import { ExercisesService } from './db/services/exercises.service';
 import { BotContext } from './interfaces/bot-context.interface';
+import { TrainingsHistoryService } from './db/services/trainings-history.service';
 
 export const startBot = async (): Promise<void> => {
     const bot = new Telegraf<BotContext>(process.env.TELEGRAM__BOT_TOKEN);
@@ -45,6 +46,7 @@ export const startBot = async (): Promise<void> => {
 
     // ExercisesService
     bot.context.exercises = new ExercisesService();
+    bot.context.trainingsHistory = new TrainingsHistoryService();
 
     // Configure stage
     const stage = new Scenes.Stage<BotContext>();

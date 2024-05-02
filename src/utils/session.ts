@@ -1,33 +1,39 @@
 import { BotContext } from '../interfaces/bot-context.interface';
-import { BotUsers } from '../db/collections/bot-user.schema';
+import { BotUser } from '../db/collections/bot-user.schema';
 
-const getSessionKey = (ctx: BotContext) => {
+type KeyType = {
+    id: number;
+    bot: string;
+};
+
+const getSessionKey = (ctx: BotContext): KeyType | null => {
     if (ctx.from == null) {
         return null;
     }
-
-    return ctx.from.id;
+    return { id: ctx.from.id, bot: ctx.botInfo.username };
 };
 
 /**
  * Session middleware with native meteor mongodb connection
  */
 export const session = () => {
-    const saveSession = async (tgId: number, data: any): Promise<void> => {
-        await BotUsers.updateOne(
-            { id: tgId },
+    const saveSession = async (key: KeyType, data: any): Promise<void> => {
+        await BotUser.updateOne(
+            { id: key.id, bot: key.bot },
             { $set: { data } },
             { upsert: true }
         );
     };
 
-    const getSession = async (tgId: number): Promise<any> => {
-        return (await BotUsers.findOne({ id: tgId }))?.data ?? {};
+    const getSession = async (key: KeyType): Promise<any> => {
+        return (
+            (await BotUser.findOne({ id: key.id, bot: key.bot }))?.data ?? {}
+        );
     };
 
     return async (ctx: BotContext, next: any) => {
         const key = getSessionKey(ctx);
-        ctx.session = key == null ? undefined : await getSession(ctx.from.id);
+        ctx.session = key == null ? undefined : await getSession(key);
 
         await next();
 

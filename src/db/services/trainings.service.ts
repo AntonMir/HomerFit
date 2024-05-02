@@ -1,7 +1,6 @@
 import { logger } from '../../utils/logger';
-import { ObjectId } from 'mongoose';
 import { ITraining } from '../../interfaces/training.interface';
-import { Trainings } from '../collections/training.schema';
+import { Training } from '../collections/training.schema';
 
 export class TrainingsService {
     /**
@@ -10,8 +9,9 @@ export class TrainingsService {
      */
     async createTraining(training: ITraining) {
         try {
-            const insertResult = await Trainings.insertOne(training);
-            return insertResult.insertedId;
+            const insertResult = new Training(training);
+            await insertResult.save();
+            return insertResult._id;
         } catch (error) {
             logger.error('TrainingsService > createTraining > ', error);
         }
@@ -22,8 +22,8 @@ export class TrainingsService {
      * @param trainingId
      * @param exerciseId
      */
-    async addExercise(trainingId: ObjectId, exerciseId: ObjectId) {
-        const result = await Trainings.updateOne(
+    async addExercise(trainingId: string, exerciseId: string) {
+        const result = await Training.updateOne(
             { _id: trainingId },
             { $push: { exercises: exerciseId } }
         );
@@ -41,11 +41,27 @@ export class TrainingsService {
      * Получить тренировку по id
      * @param _id
      */
-    async getOneById(_id: ObjectId) {
+    async getOneById(_id: string) {
         try {
-            return await Trainings.findOne({ _id });
+            return await Training.findById(_id);
         } catch (error) {
             logger.error('TrainingsService > getOneById > ', error);
+        }
+    }
+
+    /**
+     * Получить тренировку по id
+     * @param list
+     */
+    async getAllByIdList(list: string[]) {
+        try {
+            return await Training.find({
+                _id: {
+                    $in: list,
+                },
+            });
+        } catch (error) {
+            logger.error('TrainingsService > getAllByIdList > ', error);
         }
     }
 }

@@ -3,12 +3,15 @@ import { messageCleaner } from '../../utils/messageCleaner';
 import { SCENES } from '../../enums/scenes.enum';
 import { BotContext } from '../../interfaces/bot-context.interface';
 import { BotMatchContext } from '../../interfaces/bot-match-context.interface';
+import { BASE_ACTIONS } from '../../constants/base-actions.constanta';
+import { sleep } from '../../utils/sleep';
+import { logger } from '../../utils/logger';
 
 export default (createTraining: Scenes.BaseScene<BotContext>): void => {
     createTraining.enter(async (ctx: BotContext) => {
         await messageCleaner(ctx);
 
-        const text = '⬇️️Введите название тренировки⬇️️';
+        const text = '⬇️️ Введите название тренировки ⬇️️';
 
         const message = await ctx.replyWithHTML(
             text,
@@ -16,13 +19,27 @@ export default (createTraining: Scenes.BaseScene<BotContext>): void => {
         );
 
         ctx.session.messageIds.push(message.message_id);
+
+        ctx.session.hearTrainingName = true;
     });
 
     createTraining.hears(/.*/, async (ctx: BotMatchContext, next: any) => {
-        if (['/reset'].includes(ctx.match.input)) return next();
+        await sleep(500);
+        try {
+            await ctx.deleteMessage(ctx.message.message_id);
+        } catch (error) {
+            logger.error(
+                `Create training scene > hears(/.*/) > deleteMessage > ${error}`
+            );
+        }
+        if (BASE_ACTIONS.includes(ctx.match.input)) return next();
+        if (ctx.session.hearTrainingName !== true) return next();
+
+        await messageCleaner(ctx);
 
         ctx.session.chosenTrainingId = await ctx.trainings.createTraining({
             name: ctx.match.input,
+            userTgId: ctx.from.id,
         });
 
         const text =
@@ -35,9 +52,11 @@ export default (createTraining: Scenes.BaseScene<BotContext>): void => {
 
         const message = await ctx.replyWithHTML(text, keyboard);
         ctx.session.messageIds.push(message.message_id);
+        ctx.session.hearTrainingName = false;
     });
 
     createTraining.action('addNewExercise', async (ctx: BotContext) => {
+        ctx.session.hearExerciseName = true;
         return await ctx.scene.enter(SCENES.CREATE_EXERCISE);
     });
 

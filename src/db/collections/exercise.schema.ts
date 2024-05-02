@@ -1,4 +1,12 @@
-import mongoose from 'mongoose';
-import { IExercise } from '../../interfaces/exercise.interface';
+import mongoose, { Schema, Types } from 'mongoose';
 
-export const Exercises = mongoose.connection.collection<IExercise>('exercises');
+const exerciseSchema = new Schema({
+    _id: {
+        type: String,
+        default: () => new Types.ObjectId(),
+    },
+    trainingId: String,
+    name: String,
+});
+
+export const Exercise = mongoose.model('Exercise', exerciseSchema, 'exercises');

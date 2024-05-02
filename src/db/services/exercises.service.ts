@@ -1,7 +1,6 @@
 import { logger } from '../../utils/logger';
-import { ObjectId } from 'mongoose';
 import { IExercise } from '../../interfaces/exercise.interface';
-import { Exercises } from '../collections/exercise.schema';
+import { Exercise } from '../collections/exercise.schema';
 
 export class ExercisesService {
     /**
@@ -10,8 +9,9 @@ export class ExercisesService {
      */
     async createExercise(exercise: IExercise) {
         try {
-            const insertResult = await Exercises.insertOne(exercise);
-            return insertResult.insertedId;
+            const insertResult = new Exercise(exercise);
+            await insertResult.save();
+            return insertResult._id;
         } catch (error) {
             logger.error('ExercisesService > createExercise > ', error);
         }
@@ -21,13 +21,13 @@ export class ExercisesService {
      * Получить все упражнения по списку id
      * @param list
      */
-    async getAllByIdList(list: ObjectId[]) {
+    async getAllByIdList(list: string[]) {
         try {
-            return await Exercises.find({
+            return await Exercise.find({
                 _id: {
                     $in: list,
                 },
-            }).toArray();
+            }).exec();
         } catch (error) {
             logger.error('ExercisesService > getAllByIdList > ', error);
         }
@@ -37,9 +37,9 @@ export class ExercisesService {
      * Получить упражнение по id
      * @param _id
      */
-    async getOneById(_id: ObjectId) {
+    async getOneById(_id: string) {
         try {
-            return await Exercises.findOne({ _id });
+            return await Exercise.findById(_id);
         } catch (error) {
             logger.error('ExercisesService > getOneById > ', error);
         }

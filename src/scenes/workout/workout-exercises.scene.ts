@@ -17,7 +17,7 @@ const exercisesListKeyboard = async (
     exercisesList.forEach((exercise) => {
         keyboard.push([
             Markup.button.callback(
-                `Начать: "${exercise.name}"`,
+                `${exercise.name}`,
                 `exercise-${exercise._id}`
             ),
         ]);
@@ -46,7 +46,7 @@ export default (workoutExercises: Scenes.BaseScene<BotContext>): void => {
             const text =
                 `Тренировка: ${training.name}\n` +
                 `\n` +
-                `Выберите упражнение:`;
+                `Чтобы начать, выберите упражнение:`;
             message = await ctx.replyWithHTML(
                 text,
                 await exercisesListKeyboard(ctx, exercisesList)

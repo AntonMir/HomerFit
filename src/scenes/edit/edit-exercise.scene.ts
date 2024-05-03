@@ -8,9 +8,9 @@ import { sleep } from '../../utils/sleep';
 import { Message } from 'telegraf/types';
 import { IExercise } from '../../interfaces/exercise.interface';
 
-export default (editTraining: Scenes.BaseScene<BotContext>): void => {
+export default (editExercise: Scenes.BaseScene<BotContext>): void => {
     let exercise: IExercise;
-    editTraining.enter(async (ctx: BotContext) => {
+    editExercise.enter(async (ctx: BotContext) => {
         await messageCleaner(ctx);
 
         exercise = await ctx.exercises.getOneById(ctx.scene.state.exerciseId);
@@ -24,7 +24,7 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
                 [
                     Markup.button.callback(
                         'Удалить упражнение из тренировки',
-                        'deleteExercise'
+                        'deleteExerciseWarn'
                     ),
                 ],
                 [Markup.button.callback('Назад', 'toEditTraining')],
@@ -34,7 +34,7 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
         ctx.session.messageIds.push(message.message_id);
     });
 
-    editTraining.action('changeName', async (ctx: BotContext) => {
+    editExercise.action('changeName', async (ctx: BotContext) => {
         await messageCleaner(ctx);
 
         ctx.session.editExercise = true;
@@ -51,7 +51,7 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
         ctx.session.messageIds.push(message.message_id);
     });
 
-    editTraining.hears(/.*/, async (ctx: BotMatchContext, next: any) => {
+    editExercise.hears(/.*/, async (ctx: BotMatchContext, next: any) => {
         await sleep(500);
         try {
             await ctx.deleteMessage(ctx.message.message_id);
@@ -87,20 +87,34 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
         });
     });
 
-    editTraining.action('toEditTraining', async (ctx: BotContext) => {
+    editExercise.action('toEditTraining', async (ctx: BotContext) => {
         return await ctx.scene.enter(SCENES.EDIT_TRAINING, {
             trainingId: ctx.scene.state.trainingId,
         });
     });
 
-    editTraining.action('toEditExercise', async (ctx: BotContext) => {
+    editExercise.action('toEditExercise', async (ctx: BotContext) => {
         return await ctx.scene.enter(SCENES.EDIT_EXERCISE, {
             trainingId: ctx.scene.state.trainingId,
             exerciseId: ctx.scene.state.exerciseId,
         });
     });
 
-    editTraining.action('deleteExercise', async (ctx: BotContext) => {
+    editExercise.action('deleteExerciseWarn', async (ctx: BotContext) => {
+        await messageCleaner(ctx);
+
+        const message = await ctx.replyWithHTML(
+            '⚠️ Удаление упражнения приведет к потере истории! ⚠️',
+            Markup.inlineKeyboard([
+                [Markup.button.callback('Да, удалить', 'deleteTraining')],
+                [Markup.button.callback('Назад', 'toEditTraining')],
+            ])
+        );
+
+        ctx.session.messageIds.push(message.message_id);
+    });
+
+    editExercise.action('deleteTraining', async (ctx: BotContext) => {
         await messageCleaner(ctx);
 
         const deleteResult = await ctx.trainings.deleteExercise(

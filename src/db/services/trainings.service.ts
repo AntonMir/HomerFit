@@ -11,7 +11,7 @@ export class TrainingsService {
         try {
             const insertResult = new Training(training);
             await insertResult.save();
-            return insertResult._id;
+            return insertResult;
         } catch (error) {
             logger.error('TrainingsService > createTraining > ', error);
         }
@@ -62,6 +62,19 @@ export class TrainingsService {
             });
         } catch (error) {
             logger.error('TrainingsService > getAllByIdList > ', error);
+        }
+    }
+
+    /**
+     * Изменить название тренировки
+     * @param _id
+     * @param newName
+     */
+    async changeTrainingName(_id: string, newName: string) {
+        try {
+            return await Training.updateOne({ _id }, { name: newName });
+        } catch (error) {
+            logger.error('TrainingsService > changeTrainingName > ', error);
         }
     }
 }

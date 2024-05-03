@@ -6,7 +6,6 @@ import { BotMatchContext } from '../../interfaces/bot-match-context.interface';
 import { Message } from 'telegraf/types';
 import { ITraining } from '../../interfaces/training.interface';
 import { IExercise } from '../../interfaces/exercise.interface';
-import { sleep } from '../../utils/sleep';
 
 const exercisesListKeyboard = async (
     ctx: BotContext,
@@ -82,13 +81,8 @@ export default (workoutExercises: Scenes.BaseScene<BotContext>): void => {
         });
     });
 
-    // TODO: переход на редактирование
     workoutExercises.action('editExerciseList', async (ctx: BotContext) => {
-        await messageCleaner(ctx);
-        const message = await ctx.replyWithHTML('Раздел в разработке');
-        ctx.session.messageIds.push(message.message_id);
-        await sleep(2000);
-        return await ctx.scene.enter(SCENES.WORKOUT_EXERCISES, {
+        return await ctx.scene.enter(SCENES.CREATE_EXERCISE, {
             trainingId: ctx.scene.state.trainingId,
         });
     });

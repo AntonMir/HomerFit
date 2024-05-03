@@ -44,4 +44,17 @@ export class ExercisesService {
             logger.error('ExercisesService > getOneById > ', error);
         }
     }
+
+    /**
+     * Изменить название упражнения
+     * @param _id
+     * @param newName
+     */
+    async changeExerciseName(_id: string, newName: string) {
+        try {
+            return await Exercise.updateOne({ _id }, { name: newName });
+        } catch (error) {
+            logger.error('ExercisesService > changeExerciseName > ', error);
+        }
+    }
 }

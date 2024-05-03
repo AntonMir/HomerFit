@@ -17,9 +17,10 @@ export interface UserSession extends Scenes.SceneSessionData {
     // USER FIELDS
     firstStart?: boolean;
     trainingsList?: string[];
-    chosenTrainingId?: string;
     hearExerciseName?: boolean;
     hearTrainingName?: boolean;
+    editTraining?: boolean;
+    editExercise?: boolean;
 
     __scenes?: Scenes.SceneSessionData;
 }

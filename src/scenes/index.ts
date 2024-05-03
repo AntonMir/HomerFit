@@ -7,6 +7,9 @@ import createExercise from './create/create-exercise.scene';
 import workoutTrainings from './workout/workout-trainings.scene';
 import workoutExercises from './workout/workout-exercises.scene';
 import workoutApproaches from './workout/workout-approaches.scene';
+import editMain from './edit/edit-main.scene';
+import editTraining from './edit/edit-training.scene';
+import editExercise from './edit/edit-exercise.scene';
 import { SCENES } from '../enums/scenes.enum';
 import { BotContext } from '../interfaces/bot-context.interface';
 
@@ -27,6 +30,13 @@ const workoutExercisesScene = new Scenes.BaseScene<BotContext>(
 const workoutApproachesScene = new Scenes.BaseScene<BotContext>(
     SCENES.WORKOUT_APPROACHES
 );
+const editMainScene = new Scenes.BaseScene<BotContext>(SCENES.EDIT_MAIN);
+const editTrainingScene = new Scenes.BaseScene<BotContext>(
+    SCENES.EDIT_TRAINING
+);
+const editExerciseScene = new Scenes.BaseScene<BotContext>(
+    SCENES.EDIT_EXERCISE
+);
 
 export default (
     bot: Telegraf<BotContext>,
@@ -40,6 +50,9 @@ export default (
         [SCENES.WORKOUT_TRAININGS, workoutTrainingsScene],
         [SCENES.WORKOUT_EXERCISES, workoutExercisesScene],
         [SCENES.WORKOUT_APPROACHES, workoutApproachesScene],
+        [SCENES.EDIT_MAIN, editMainScene],
+        [SCENES.EDIT_TRAINING, editTrainingScene],
+        [SCENES.EDIT_EXERCISE, editExerciseScene],
     ]);
 
     firstEnter(firstEnterScene);
@@ -49,6 +62,9 @@ export default (
     workoutTrainings(workoutTrainingsScene);
     workoutExercises(workoutExercisesScene);
     workoutApproaches(workoutApproachesScene);
+    editMain(editMainScene);
+    editTraining(editTrainingScene);
+    editExercise(editExerciseScene);
 
     bot.use(initScene);
 };

@@ -25,13 +25,16 @@ init.command('start', async (ctx) => {
 
     return await ctx.scene.enter(SCENES.MAIN_MENU);
 });
-//
-// init.command('reset', async (ctx: BotContext) => {
-//     await BotUser.deleteOne({ id: ctx.from.id });
-//     ctx.session = {
-//         __scenes: {},
-//     };
-//     await ctx.reply('Successful reset. /start');
-// });
+
+init.command('reset', async (ctx: BotContext, next) => {
+    if (process.env.NODE_ENV === 'development') {
+        await BotUser.deleteOne({ id: ctx.from.id });
+        ctx.session = {
+            __scenes: {},
+        };
+        await ctx.reply('Successful reset. /start');
+    }
+    return await next();
+});
 
 export default init;

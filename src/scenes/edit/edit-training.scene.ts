@@ -119,6 +119,8 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
     });
 
     editTraining.action('choseExerciseToEdit', async (ctx: BotContext) => {
+        await messageCleaner(ctx);
+
         const exercises = await ctx.exercises.getAllByIdList(
             training.exercises
         );

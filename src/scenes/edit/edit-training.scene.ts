@@ -24,7 +24,10 @@ const exercisesListKeyboard = async (
         ]);
     });
 
-    keyboard.push([Markup.button.callback(`Назад`, `toTrainings`)]);
+    keyboard.push([
+        Markup.button.callback(`Добавить новое упражнение`, `createExercise`),
+    ]);
+    keyboard.push([Markup.button.callback(`Назад`, `toEditTraining`)]);
 
     return Markup.inlineKeyboard(keyboard);
 };
@@ -47,6 +50,12 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
                     Markup.button.callback(
                         'Редактировать упражнения',
                         'choseExerciseToEdit'
+                    ),
+                ],
+                [
+                    Markup.button.callback(
+                        'Удалить тренировку',
+                        'deleteTrainingWarn'
                     ),
                 ],
                 [Markup.button.callback('Назад', 'toEditMain')],
@@ -121,19 +130,34 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
     editTraining.action('choseExerciseToEdit', async (ctx: BotContext) => {
         await messageCleaner(ctx);
 
-        const exercises = await ctx.exercises.getAllByIdList(
-            training.exercises
-        );
+        let text = `Тренировка: ${training.name}`;
+        let message: Message.TextMessage;
 
-        const text =
-            `Тренировка: ${training.name}\n` +
-            `\n` +
-            `Выберите тренировку для редактирования: `;
+        if (training.exercises && training.exercises.length > 0) {
+            const exercises = await ctx.exercises.getAllByIdList(
+                training.exercises
+            );
 
-        const message = await ctx.replyWithHTML(
-            text,
-            await exercisesListKeyboard(ctx, exercises)
-        );
+            text += `\n\nВыберите упражнение для редактирования:`;
+
+            message = await ctx.replyWithHTML(
+                text,
+                await exercisesListKeyboard(ctx, exercises)
+            );
+        } else {
+            message = await ctx.replyWithHTML(
+                'Вы еще не добавили ни одного приложения',
+                Markup.inlineKeyboard([
+                    [
+                        Markup.button.callback(
+                            `Добавить упражнение`,
+                            `createExercise`
+                        ),
+                    ],
+                    [Markup.button.callback(`Главное меню`, `toMainMenu`)],
+                ])
+            );
+        }
 
         ctx.session.messageIds.push(message.message_id);
     });
@@ -145,5 +169,67 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
             trainingId: ctx.scene.state.trainingId,
             exerciseId,
         });
+    });
+
+    editTraining.action('deleteTrainingWarn', async (ctx: BotContext) => {
+        await messageCleaner(ctx);
+
+        const message = await ctx.replyWithHTML(
+            '⚠️ Удаление тренировки приведет к потере истории! ⚠️',
+            Markup.inlineKeyboard([
+                [Markup.button.callback('Да, удалить', 'deleteTraining')],
+                [Markup.button.callback('Назад', 'toEditTraining')],
+            ])
+        );
+
+        ctx.session.messageIds.push(message.message_id);
+    });
+
+    editTraining.action('deleteTraining', async (ctx: BotContext) => {
+        await messageCleaner(ctx);
+
+        const deleteTraining = await ctx.trainings.deleteTraining(
+            ctx.scene.state.trainingId
+        );
+
+        const trainingIdIndex = ctx.session.trainingsList.indexOf(
+            ctx.scene.state.trainingId
+        );
+
+        if (trainingIdIndex !== -1) {
+            ctx.session.trainingsList.splice(trainingIdIndex);
+        }
+
+        let message: Message.TextMessage;
+
+        if (deleteTraining) {
+            message = await ctx.replyWithHTML('Тренировка успешно удалена');
+        } else {
+            message = await ctx.replyWithHTML(
+                'Что-то пошло не так, попробуйте позже'
+            );
+        }
+
+        ctx.session.messageIds.push(message.message_id);
+
+        await sleep(3000);
+
+        return await ctx.scene.enter(SCENES.MAIN_MENU);
+    });
+
+    editTraining.action('toEditTraining', async (ctx: BotContext) => {
+        return await ctx.scene.enter(SCENES.EDIT_TRAINING, {
+            trainingId: ctx.scene.state.trainingId,
+        });
+    });
+
+    editTraining.action('createExercise', async (ctx: BotContext) => {
+        return await ctx.scene.enter(SCENES.CREATE_EXERCISE, {
+            trainingId: ctx.scene.state.trainingId,
+        });
+    });
+
+    editTraining.action('toMainMenu', async (ctx: BotContext) => {
+        return await ctx.scene.enter(SCENES.MAIN_MENU);
     });
 };

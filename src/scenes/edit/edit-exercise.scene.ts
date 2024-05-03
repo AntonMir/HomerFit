@@ -21,6 +21,12 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
             text,
             Markup.inlineKeyboard([
                 [Markup.button.callback('Изменить название', 'changeName')],
+                [
+                    Markup.button.callback(
+                        'Удалить упражнение из тренировки',
+                        'deleteExercise'
+                    ),
+                ],
                 [Markup.button.callback('Назад', 'toEditTraining')],
             ])
         );
@@ -91,6 +97,33 @@ export default (editTraining: Scenes.BaseScene<BotContext>): void => {
         return await ctx.scene.enter(SCENES.EDIT_EXERCISE, {
             trainingId: ctx.scene.state.trainingId,
             exerciseId: ctx.scene.state.exerciseId,
+        });
+    });
+
+    editTraining.action('deleteExercise', async (ctx: BotContext) => {
+        await messageCleaner(ctx);
+
+        const deleteResult = await ctx.trainings.deleteExercise(
+            exercise._id,
+            exercise.trainingId
+        );
+
+        let message: Message.TextMessage;
+
+        if (deleteResult) {
+            message = await ctx.replyWithHTML('Упражнение успешно удалено');
+        } else {
+            message = await ctx.replyWithHTML(
+                'Что-то пошло не так, попробуйте позже'
+            );
+        }
+
+        ctx.session.messageIds.push(message.message_id);
+
+        await sleep(3000);
+
+        return await ctx.scene.enter(SCENES.EDIT_TRAINING, {
+            trainingId: ctx.scene.state.trainingId,
         });
     });
 };

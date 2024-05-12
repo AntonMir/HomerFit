@@ -7,12 +7,17 @@ export default (mainMenu: Scenes.BaseScene<BotContext>): void => {
     mainMenu.enter(async (ctx: BotContext) => {
         await messageCleaner(ctx);
 
+        const webAppUrl = process.env.WEB_APP_URL;
+
+        console.log(`WebAppUrl:`, webAppUrl);
+
         const menuText = `Главное меню`;
 
         const menuKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback('Начать тренировку', 'startTraining')],
             [Markup.button.callback('Изменить тренировку', 'editTraining')],
             [Markup.button.callback('Создать тренировку', 'createTraining')],
+            [Markup.button.webApp('Статистика', webAppUrl, !webAppUrl)],
         ]);
 
         const message = await ctx.replyWithHTML(menuText, menuKeyboard);

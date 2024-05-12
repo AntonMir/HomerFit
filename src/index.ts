@@ -9,7 +9,7 @@ import expressLogger from './utils/express-logger';
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APPLICATION_PORT || 3000;
 
 app.use(cors());
 

@@ -25,7 +25,7 @@ export class TrainingsHistoryService {
         try {
             return TrainingHistory.findOne({ _id });
         } catch (error) {
-            logger.error('TrainingsService > createTraining > ', error);
+            logger.error('TrainingsService > getOneById > ', error);
         }
     }
 
@@ -37,7 +37,7 @@ export class TrainingsHistoryService {
         try {
             return TrainingHistory.find({ trainingId }).exec();
         } catch (error) {
-            logger.error('TrainingsService > createTraining > ', error);
+            logger.error('TrainingsService > getAllByTrainingId > ', error);
         }
     }
 }

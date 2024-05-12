@@ -1,5 +1,5 @@
 import * as moment from 'moment/moment';
-import { logger } from '../logger';
+import { logger } from './logger';
 
 export class MomentTimer {
     /**

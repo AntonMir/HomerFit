@@ -40,4 +40,46 @@ export class TrainingsHistoryService {
             logger.error('TrainingsService > getAllByTrainingId > ', error);
         }
     }
+
+    /**
+     * Получить всю историю тренировок пользователя с пагинацией
+     * @param telegram_id
+     * @param page Номер страницы (начиная с 1)
+     * @param limit Количество записей на странице
+     */
+    async getAllByTelegramId(telegram_id: number, page = 1, limit = 10) {
+        try {
+            // Вычисляем индекс начальной записи для пагинации
+            const startIndex = (page - 1) * limit;
+
+            // Получаем тренировки для текущей страницы с учетом лимита и смещения
+            const trainings = await TrainingHistory.find({
+                userTgId: telegram_id,
+            })
+                .skip(startIndex)
+                .limit(limit)
+                .sort({
+                    date: -1,
+                })
+                .exec();
+
+            // Получаем общее количество тренировок в базе данных
+            const totalTrainings = await TrainingHistory.countDocuments({
+                userTgId: telegram_id,
+            });
+
+            // Вычисляем общее количество страниц
+            const totalPages = Math.ceil(totalTrainings / limit);
+
+            return {
+                trainings,
+                totalPages,
+                currentPage: page,
+                totalTrainings,
+            };
+        } catch (error) {
+            logger.error('TrainingsService > getAllByTrainingId > ', error);
+            throw new Error('Ошибка при получении данных тренировок');
+        }
+    }
 }

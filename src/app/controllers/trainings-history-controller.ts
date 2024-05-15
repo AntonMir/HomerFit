@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
  * GET /api/trainings/history
  */
 
-class TrainingsController {
+class TrainingsHistoryController {
     /**
      *  Получить всю историю
      */
@@ -27,7 +27,7 @@ class TrainingsController {
                 +limit
             );
 
-            if (history.trainings.length <= 0) {
+            if (history.data.length <= 0) {
                 return res.status(404).send({
                     message: null,
                     error: 'История тренировок пуста',
@@ -39,7 +39,10 @@ class TrainingsController {
                 error: null,
             });
         } catch (error) {
-            console.error('TrainingsController > getAllHistory: ', error);
+            console.error(
+                'TrainingsHistoryController > getAllHistory: ',
+                error
+            );
             res.status(500).send({
                 message: null,
                 error: 'Внутренняя ошибка сервера',
@@ -49,4 +52,4 @@ class TrainingsController {
 }
 
 // экспортируем новый экземпляр класса
-export default new TrainingsController();
+export default new TrainingsHistoryController();

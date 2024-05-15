@@ -72,7 +72,7 @@ export class TrainingsHistoryService {
             const totalPages = Math.ceil(totalTrainings / limit);
 
             return {
-                trainings,
+                data: trainings,
                 totalPages,
                 currentPage: page,
                 totalTrainings,

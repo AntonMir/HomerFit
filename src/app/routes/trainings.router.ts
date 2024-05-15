@@ -1,8 +1,10 @@
 import * as express from 'express';
 const router = express.Router();
-import trainingsController from '../controllers/trainingsController';
+import trainingsHistoryController from '../controllers/trainings-history-controller';
+import trainingsController from '../controllers/trainings-controller';
 
 // История тренировок
-router.get('/history', trainingsController.getAllHistory);
+router.get('/history', trainingsHistoryController.getAllHistory);
+router.get('', trainingsController.getAllUsersTrainings);
 
 export default router;

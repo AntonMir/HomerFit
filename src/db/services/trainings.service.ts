@@ -51,14 +51,55 @@ export class TrainingsService {
     }
 
     /**
-     * Получить тренировку по id
-     * @param list
+     * Получить все тренировки пользователя по его tgId
+     * @param telegram_id
+     * @param page
+     * @param limit
      */
-    async getAllByIdList(list: string[]) {
+    async getAllUsersTrainings(telegram_id: number, page = 1, limit = 10) {
+        try {
+            // Вычисляем индекс начальной записи для пагинации
+            const startIndex = (page - 1) * limit;
+
+            // Получаем тренировки для текущей страницы с учетом лимита и смещения
+            const trainings = await Training.find({
+                userTgId: telegram_id,
+            })
+                .skip(startIndex)
+                .limit(limit)
+                .sort({
+                    date: -1,
+                })
+                .exec();
+
+            // Получаем общее количество тренировок в базе данных
+            const totalTrainings = await Training.countDocuments({
+                userTgId: telegram_id,
+            });
+
+            // Вычисляем общее количество страниц
+            const totalPages = Math.ceil(totalTrainings / limit);
+
+            return {
+                data: trainings,
+                totalPages,
+                currentPage: page,
+                totalTrainings,
+            };
+        } catch (error) {
+            logger.error('TrainingsService > getAllUsersTrainings > ', error);
+        }
+    }
+
+    /**
+     * Получить тренировки по списку id
+     * @param listId
+     */
+    async getAllByIdList(listId: string[]) {
         try {
             return await Training.find({
                 _id: {
-                    $in: list,
+                    $in: listId,
                 },
             });
         } catch (error) {

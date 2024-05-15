@@ -1,0 +1,9 @@
+POST http://localhost:14202/bots
+Content-Type: application/json
+
+{
+  "username": "Inst2_test_bot",
+  "apiToken": "6763771136:AAGgP7loViPiKH3Jde-xPjMv_AQj1voHX9U",
+  "domain": "bisonscar.click",
+  "type": "bot.platform_bot"
+}

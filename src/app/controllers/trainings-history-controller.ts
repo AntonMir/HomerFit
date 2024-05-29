@@ -55,7 +55,7 @@ class TrainingsHistoryController {
      */
     async getTrainingHistory(req: Request, res: Response) {
         try {
-            const { training_id } = req.query;
+            const { training_id } = req.params;
 
             console.log(`getTrainingHistory`, training_id);
 

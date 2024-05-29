@@ -45,7 +45,49 @@ class TrainingsHistoryController {
             );
             res.status(500).send({
                 message: null,
-                error: 'Внутренняя ошибка сервера',
+                error: `Внутренняя ошибка сервера: ${error}`,
+            });
+        }
+    }
+
+    /**
+     *  Получить историю отдельной тренировки
+     */
+    async getTrainingHistory(req: Request, res: Response) {
+        try {
+            const { training_id } = req.query;
+
+            if (!training_id) {
+                return res.status(400).send({
+                    message: null,
+                    error: 'Отсутствует training_id',
+                });
+            }
+            const trainingsHistoryService = new TrainingsHistoryService();
+
+            const history = await trainingsHistoryService.getAllByTrainingId(
+                String(training_id)
+            );
+
+            if (history.data.length <= 0) {
+                return res.status(404).send({
+                    message: null,
+                    error: 'История тренировки пуста',
+                });
+            }
+
+            return res.status(200).send({
+                message: history,
+                error: null,
+            });
+        } catch (error) {
+            console.error(
+                'TrainingsHistoryController > getTrainingHistory: ',
+                error
+            );
+            res.status(500).send({
+                message: null,
+                error: `Внутренняя ошибка сервера: ${error}`,
             });
         }
     }

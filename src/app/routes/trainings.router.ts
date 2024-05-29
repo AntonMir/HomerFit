@@ -5,6 +5,10 @@ import trainingsController from '../controllers/trainings-controller';
 
 // История тренировок
 router.get('/history', trainingsHistoryController.getAllHistory);
+router.get(
+    '/history/:training_id',
+    trainingsHistoryController.getTrainingHistory
+);
 router.get('', trainingsController.getAllUsersTrainings);
 
 export default router;

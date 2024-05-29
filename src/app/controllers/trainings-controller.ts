@@ -45,7 +45,7 @@ class TrainingsController {
             );
             res.status(500).send({
                 message: null,
-                error: 'Внутренняя ошибка сервера',
+                error: `Внутренняя ошибка сервера: ${error}`,
             });
         }
     }

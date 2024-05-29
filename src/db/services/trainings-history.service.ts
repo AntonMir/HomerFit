@@ -35,7 +35,22 @@ export class TrainingsHistoryService {
      */
     async getAllByTrainingId(trainingId: string) {
         try {
-            return TrainingHistory.find({ trainingId }).exec();
+            const history = await TrainingHistory.find({ trainingId })
+                .sort({
+                    date: -1,
+                })
+                .exec();
+
+            const totalTrainings = await TrainingHistory.countDocuments({
+                trainingId,
+            });
+
+            return {
+                data: history,
+                totalPages: null,
+                currentPage: null,
+                totalTrainings,
+            };
         } catch (error) {
             logger.error('TrainingsService > getAllByTrainingId > ', error);
         }

@@ -57,6 +57,8 @@ class TrainingsHistoryController {
         try {
             const { training_id } = req.query;
 
+            console.log(`getTrainingHistory`, training_id);
+
             if (!training_id) {
                 return res.status(400).send({
                     message: null,

@@ -108,6 +108,21 @@ export class TrainingsService {
     }
 
     /**
+     * Получить список упражнений тренировки
+     * @param trainingId
+     */
+    async getExercisesByTrainingId(trainingId: string) {
+        try {
+            return await Exercise.find({ trainingId });
+        } catch (error) {
+            logger.error(
+                'TrainingsService > getExercisesByTrainingId > ',
+                error
+            );
+        }
+    }
+
+    /**
      * Изменить название тренировки
      * @param _id
      * @param newName
